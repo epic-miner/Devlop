@@ -1,15 +1,22 @@
-# Use a base image that supports systemd, for example, Ubuntu 
-FROM ubuntu:20.04 
- 
-# Install necessary packages 
-RUN apt-get update && \ 
-apt-get install -y shellinabox && \ 
-apt-get install -y systemd && \ 
-apt-get clean && \ 
-rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* 
-RUN echo 'root:root' | chpasswd 
-# Expose the web-based terminal port 
-EXPOSE 4200 
- 
-# Start shellinabox 
-CMD ["/usr/bin/shellinaboxd", "-t", "-s", "/:LOGIN"]
+# Use the latest Ubuntu image as the base
+FROM ubuntu:latest
+
+# Set the maintainer label
+LABEL maintainer="yourname@example.com"
+
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install -y git && \
+    apt-get clean
+
+# Clone the repository
+RUN git clone https://github.com/epic-miner/codeserver /opt/codeserver
+
+# Change directory to /opt/codeserver
+WORKDIR /opt/codeserver
+
+# Make the script executable (if it is not already)
+RUN chmod +x codeserver.sh
+
+# Run the script
+CMD ["sh", "codeserver.sh"]
